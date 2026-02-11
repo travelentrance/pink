@@ -1,57 +1,55 @@
-
 document.addEventListener("DOMContentLoaded", () => {
 
     const songs = document.querySelectorAll(".songname h3");
     const audio = document.getElementById("audio");
     const album = document.querySelector(".albname");
     const box = document.getElementById("box");
-    const progress = document.getElementById("progress");
+
+    const playBtn = document.getElementById("playPause");
+    const nextBtn = document.getElementById("next");
+    const prevBtn = document.getElementById("prev");
     const shuffleBtn = document.getElementById("shuffle");
     const loopBtn = document.getElementById("loop");
+
+    const progress = document.getElementById("progress");
     const cd = document.querySelector(".cd");
+    const nowTitle = document.querySelector(".now-playing-title");
 
     let currentIndex = -1;
     let isShuffle = false;
     let isLoop = false;
-    let playerOpened = false;
 
     /* =====================
-       PHÍM P
+       PLAY SONG
     ======================*/
-    document.addEventListener("keydown", (e) => {
-        if (e.key.toLowerCase() === "p") {
-            album.classList.add("move-up");
-            box.classList.add("show");
-        }
-    });
+    function loadSong(index) {
 
-    /* =====================
-       PLAY FUNCTION
-    ======================*/
-    function playSong(index) {
+        songs.forEach(s => s.classList.remove("active"));
 
-        if (index === currentIndex) return;
+        const song = songs[index];
+        song.classList.add("active");
 
-        const oldSong = songs[currentIndex];
-        const newSong = songs[index];
-
-        if (oldSong) {
-            oldSong.classList.remove("active");
-            oldSong.classList.add("leaving");
-            setTimeout(() => oldSong.classList.remove("leaving"), 600);
-        }
-
-        newSong.classList.add("active");
         currentIndex = index;
 
-        audio.src = newSong.dataset.audio;
-        audio.play();
+        audio.src = song.dataset.audio; // đúng với HTML
+        nowTitle.textContent = song.textContent;
+    }
 
-        // mở player lần đầu
-        if (!playerOpened) {
-            document.body.classList.add("player-active");
-            playerOpened = true;
+    function playSong(index) {
+        if (index !== undefined) {
+            loadSong(index);
         }
+
+        audio.play();
+        playBtn.textContent = "⏸";
+        cd.classList.add("playing");
+        document.body.classList.add("player-active");
+    }
+
+    function pauseSong() {
+        audio.pause();
+        playBtn.textContent = "▶";
+        cd.classList.remove("playing");
     }
 
     /* =====================
@@ -64,30 +62,79 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* =====================
-       AUTO NEXT
+       NEXT / PREV
+    ======================*/
+    function nextSong() {
+
+        if (isShuffle) {
+            let random;
+            do {
+                random = Math.floor(Math.random() * songs.length);
+            } while (random === currentIndex);
+            playSong(random);
+            return;
+        }
+
+        let next = currentIndex + 1;
+        if (next >= songs.length) next = 0;
+        playSong(next);
+    }
+
+    function prevSong() {
+        let prev = currentIndex - 1;
+        if (prev < 0) prev = songs.length - 1;
+        playSong(prev);
+    }
+
+    nextBtn.addEventListener("click", nextSong);
+    prevBtn.addEventListener("click", prevSong);
+
+    /* =====================
+       AUTO NEXT WHEN END
     ======================*/
     audio.addEventListener("ended", () => {
 
         if (isLoop) {
-            playSong(currentIndex);
+            audio.currentTime = 0;
+            audio.play();
             return;
         }
 
-        if (isShuffle) {
-            let randomIndex;
-            do {
-                randomIndex = Math.floor(Math.random() * songs.length);
-            } while (randomIndex === currentIndex);
-            playSong(randomIndex);
+        nextSong();
+    });
+
+    /* =====================
+       PLAY / PAUSE BUTTON
+    ======================*/
+    playBtn.addEventListener("click", () => {
+
+        if (!audio.src && currentIndex === -1) return;
+
+        if (audio.paused) {
+            playSong();
         } else {
-            let next = currentIndex + 1;
-            if (next >= songs.length) next = 0;
-            playSong(next);
+            pauseSong();
         }
     });
 
     /* =====================
-       PROGRESS UPDATE
+       SHUFFLE
+    ======================*/
+    shuffleBtn.addEventListener("click", () => {
+        isShuffle = !isShuffle;
+        shuffleBtn.classList.toggle("active-btn", isShuffle);
+    });
+
+    /* =====================
+       LOOP
+    ======================*/
+    loopBtn.addEventListener("click", () => {
+        isLoop = !isLoop;
+        loopBtn.classList.toggle("active-btn", isLoop);
+    });
+
+    /* =====================
+       PROGRESS BAR
     ======================*/
     audio.addEventListener("timeupdate", () => {
 
@@ -106,23 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     progress.addEventListener("input", () => {
         if (!audio.duration) return;
-            audio.currentTime = (progress.value / 100) * audio.duration;
-    });
-
-    /* =====================
-       SHUFFLE
-    ======================*/
-    shuffleBtn.addEventListener("click", () => {
-        isShuffle = !isShuffle;
-        shuffleBtn.classList.toggle("active-btn");
-    });
-
-    /* =====================
-       LOOP
-    ======================*/
-    loopBtn.addEventListener("click", () => {
-        isLoop = !isLoop;
-        loopBtn.classList.toggle("active-btn");
+        audio.currentTime = (progress.value / 100) * audio.duration;
     });
 
     /* =====================
@@ -137,129 +168,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* =====================
-       MOBILE TAP COLLAPSE
+       MOBILE TAP
+       Chạm màn hình -> chữ "màu hồng" chạy lên đầu
     ======================*/
     if (window.innerWidth <= 768) {
 
-        let collapsed = false;
+        document.addEventListener("touchstart", (e) => {
 
-        document.addEventListener("click", (e) => {
-
+            // không kích hoạt nếu đang bấm vào list bài
             if (e.target.closest(".songname")) return;
 
-            collapsed = !collapsed;
-            document.body.classList.toggle("mobile-collapse", collapsed);
+            album.classList.add("move-up");
+            box.classList.add("show");
         });
     }
-
-});
-
-document.addEventListener("keydown", function(e){
-    if(e.key.toLowerCase() === "p"){
-        document.body.classList.add("player-open");
-    }
-});
-document.querySelectorAll(".songname h3").forEach(song => {
-    song.addEventListener("click", function(){
-
-        document.body.classList.add("player-active");
-
-        document.querySelectorAll(".songname h3")
-            .forEach(s => s.classList.remove("active"));
-
-        this.classList.add("active");
-    });
-});
-
-document.addEventListener("DOMContentLoaded", function(){
-
-    const audio = document.getElementById("audio");
-    const playBtn = document.getElementById("playPause");
-    const nextBtn = document.getElementById("next");
-    const prevBtn = document.getElementById("prev");
-    const cd = document.querySelector(".cd");
-    const songs = document.querySelectorAll(".songname h3");
-    const nowTitle = document.querySelector(".now-playing-title");
-
-    /* ===== BẤM P ===== */
-    document.addEventListener("keydown", function(e){
-        if(e.key.toLowerCase() === "p"){
-            document.body.classList.add("player-open");
-        }
-    });
-
-    /* ===== CLICK SONG ===== */
-    songs.forEach(song => {
-        song.addEventListener("click", function(){
-
-            songs.forEach(s => s.classList.remove("active"));
-            this.classList.add("active");
-
-            const src = this.getAttribute("data-src");
-
-            if(src){
-                audio.src = src;
-                audio.play().then(() => {
-                    playBtn.textContent = "⏸";
-                    cd.classList.add("playing");
-                }).catch(err => {
-                    console.log("Play bị chặn:", err);
-                });
-            }
-
-            if(nowTitle){
-                nowTitle.textContent = this.textContent;
-            }
-        });
-    });
-
-    /* ===== PLAY / PAUSE ===== */
-    playBtn.addEventListener("click", function(){
-
-        if(!audio.src){
-            console.log("Chưa chọn bài");
-            return;
-        }
-
-        if(audio.paused){
-            audio.play();
-            playBtn.textContent = "⏸";
-            cd.classList.add("playing");
-        } else {
-            audio.pause();
-            playBtn.textContent = "▶";
-            cd.classList.remove("playing");
-        }
-    });
-    // ===== NEXT =====
-    nextBtn.addEventListener("click", nextSong);
-    nextBtn.addEventListener("touchstart", nextSong);
-
-    prevBtn.addEventListener("click", prevSong);
-    prevBtn.addEventListener("touchstart", prevSong);
-
-    function nextSong() {
-        currentIndex++;
-        if (currentIndex >= songs.length) {
-            currentIndex = 0;
-        }
-        loadSong(currentIndex);
-        playSong();
-    }
-
-function prevSong() {
-    currentIndex--;
-    if (currentIndex < 0) {
-        currentIndex = songs.length - 1;
-    }
-    loadSong(currentIndex);
-    playSong();
-}
-
-    /* ===== KẾT THÚC BÀI ===== */
-    audio.addEventListener("ended", function(){
-        playBtn.textContent = "▶";
-        cd.classList.remove("playing");
-    });
 
 });
