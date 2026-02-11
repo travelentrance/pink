@@ -232,29 +232,30 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });
     // ===== NEXT =====
-    nextBtn.addEventListener("click", function () {
+    nextBtn.addEventListener("click", nextSong);
+    nextBtn.addEventListener("touchstart", nextSong);
+
+    prevBtn.addEventListener("click", prevSong);
+    prevBtn.addEventListener("touchstart", prevSong);
+
+    function nextSong() {
         currentIndex++;
-
         if (currentIndex >= songs.length) {
-            currentIndex = 0; // quay lại bài đầu
+            currentIndex = 0;
         }
-
         loadSong(currentIndex);
         playSong();
-    });
+    }
 
-    // ===== PREV =====
-    prevBtn.addEventListener("click", function () {
-        currentIndex--;
+function prevSong() {
+    currentIndex--;
+    if (currentIndex < 0) {
+        currentIndex = songs.length - 1;
+    }
+    loadSong(currentIndex);
+    playSong();
+}
 
-        if (currentIndex < 0) {
-            currentIndex = songs.length - 1; // về bài cuối
-        }
-
-        audio.src = songs[currentIndex].dataset.audio;
-        audio.play();
-
-    });
     /* ===== KẾT THÚC BÀI ===== */
     audio.addEventListener("ended", function(){
         playBtn.textContent = "▶";
