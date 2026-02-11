@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Album - Màu Hồng</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=block" rel="stylesheet">
+
+    <script src="main.js" defer></script>
+</head>
+
+<body>
+
+    <!-- CREDIT -->
+    <div class="sub">
+        <h5>Written & Produced by luciian & frozxxi</h5>
+        <h5>Executive produced by luciian</h5>
+        <h5>featuring vocals from shrum, Edsel 24T & YUNGBOI MGB</h5>
+        <h5>cover art by shrum</h5>
+        <h5>web dev by frozxxi</h5>
+    </div>
+
+    <!-- INTRO + SONG LIST -->
+    <div id="box">
+        <div class="albname">
+            <h1>màu hồng</h1>
+        </div>
+
+        <div class="songname">
+            <h3 data-audio="music/1.flac">1. MIXSET MÙA XUÂN 2026 DJ LUXIPHÊ</h3>
+            <h3 data-audio="music/2.flac">2. đỗ lít freestyle (skit)</h3>
+            <h3 data-audio="music/3.flac">3. velvet</h3>
+            <h3 data-audio="music/4.flac">4. sếp gia kiệt (skit)</h3>
+            <h3 data-audio="music/5.flac">5. what you need</h3>
+            <h3 data-audio="music/6.flac">6. jpop</h3>
+            <h3 data-audio="music/7.flac">7. fed up</h3>
+            <h3 data-audio="music/8.flac">8. clueless freestyle</h3>
+            <h3 data-audio="music/9.flac">9. i sober</h3>
+            <h3 data-audio="music/10.flac">10. con mèo</h3>
+            <h3 data-audio="music/11.flac">11. hate it</h3>
+            <h3 data-audio="music/12.flac">12. chạy đi</h3>
+            <h3 data-audio="music/13.flac">13. blick</h3>
+            <h3 data-audio="music/14.flac">14. run the gauntlet</h3>
+            <h3 data-audio="music/15.flac">15. 94 le quy don</h3>
+        </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+        <button id="shuffle">🔀</button>
+        <button id="loop">🔁</button>
+        <button id="prev">⏮</button>
+        <button id="playPause">⏸</button>
+        <button id="next">⏭</button>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <input type="range" id="progress" min="0" max="100" value="0">
+
+    <!-- NOW PLAYING TITLE -->
+    <div class="now-playing-title"></div>
+
+    <!-- CD ICON -->
+    <div class="cd"></div>
+
+    <!-- AUDIO -->
+    <audio id="audio"></audio>
+
+</body>
+</html>
